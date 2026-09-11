@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3DES Virtual Cryptography Laboratory</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="eyebrow">Cryptography and Network Security</p>
+      <h1>3DES Virtual Cryptography Laboratory</h1>
+      <p>Trace the legacy Triple DES EDE construction, one real transformation at a time.</p>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="intro-title">
+      <div><p class="section-label">Interactive laboratory</p><h2 id="intro-title">Make the three stages visible.</h2></div>
+      <p>Enter text or generated ciphertext to inspect every EDE stage. This classroom demonstration uses PKCS#7 padding and ECB mode.</p>
+    </section>
+
+    <div class="lab-grid">
+      <section class="panel controls-panel" aria-labelledby="controls-title">
+        <div class="panel-heading"><div><p class="section-label">Experiment setup</p><h2 id="controls-title">Inputs</h2></div><span class="status-dot" aria-hidden="true"></span></div>
+        <div class="mode-switch" role="tablist" aria-label="Operation mode">
+          <button class="mode-button active" id="encrypt-tab" data-mode="encrypt" role="tab" aria-selected="true">Encrypt</button>
+          <button class="mode-button" id="decrypt-tab" data-mode="decrypt" role="tab" aria-selected="false">Decrypt</button>
+        </div>
+        <form id="operation-form">
+          <div class="field" id="plaintext-field"><label for="plaintext">Plaintext</label><textarea id="plaintext" rows="4" placeholder="Enter text to encrypt">YashSeetha</textarea><small>Encoded as UTF-8 before padding.</small></div>
+          <div class="field hidden" id="ciphertext-field"><label for="ciphertext">Ciphertext (hex)</label><textarea id="ciphertext" rows="4" placeholder="Paste an even-length hexadecimal ciphertext"></textarea><small>Must be non-empty and aligned to 8-byte DES blocks.</small></div>
+          <section class="internal-key-card" aria-labelledby="internal-key-title">
+            <div class="internal-key-heading">
+              <span class="key-card-mark" aria-hidden="true">K</span>
+              <h3 id="internal-key-title">3DES Key Configuration</h3>
+            </div>
+            <p class="internal-key-description">3DES automatically uses three internal 8-byte keys derived from a fixed 24-byte educational key. The key size is separate from DES's 8-byte (64-bit) block size.</p>
+            <div class="key-components" aria-label="Internal 3DES key components">
+              <div class="key-component"><strong>K1</strong><span>1st 8 bytes</span></div>
+              <div class="key-component"><strong>K2</strong><span>2nd 8 bytes</span></div>
+              <div class="key-component"><strong>K3</strong><span>3rd 8 bytes</span></div>
+            </div>
+          </section>
+          <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Run encryption</button><button class="secondary-button" id="reset-button" type="button">Reset</button></div>
+        </form>
+        <div class="message" id="message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <section class="panel pipeline-panel" aria-labelledby="pipeline-title"><div class="panel-heading"><div><p class="section-label">Live trace</p><h2 id="pipeline-title">3DES pipeline</h2></div><span id="operation-badge" class="operation-badge">EDE</span></div><div id="pipeline" class="pipeline" aria-live="polite"><div class="empty-pipeline"><span class="empty-number">00</span><p>Enter your plaintext and key, then run an operation to reveal the transformation.</p></div></div></section>
+    </div>
+
+    <section class="results-band" aria-labelledby="results-title"><div class="results-heading"><div><p class="section-label">Evidence</p><h2 id="results-title">Result</h2></div><span id="result-status" class="result-status">Awaiting operation</span></div><div id="result-content" class="result-content"><p class="muted">Intermediate values and verification will appear here after a successful operation.</p></div></section>
+
+    <section class="learning" aria-labelledby="learning-title"><div class="learning-heading"><p class="section-label">Context notes</p><h2 id="learning-title">A compact field guide</h2></div><div class="learning-grid"><article><h3>DES</h3><p>A 64-bit-block Feistel cipher with 16 rounds, substitution boxes, permutations, and a reversible round-key schedule.</p></article><article><h3>3DES EDE</h3><p>Encrypt with K1, decrypt with K2, then encrypt with K3. Decryption reverses that sequence: K3, K2, K1.</p></article><article><h3>Legacy baseline</h3><p>ECB and 3DES are shown for academic continuity. ECB reveals repeated-block patterns and neither choice is recommended for modern sensitive data.</p></article></div></section>
+  </main>
+  <script type="module" src="/static/js/app.js?v=3"></script>
+</body>
+</html>
