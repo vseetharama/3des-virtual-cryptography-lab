@@ -4,7 +4,7 @@
 
 The 3DES Virtual Cryptography Laboratory is an academic browser-based virtual laboratory for Triple Data Encryption Standard (3DES/TDES). It is intended for Cryptography and Network Security coursework, laboratory demonstrations, assignments, and faculty evaluation.
 
-The application makes Triple DES encryption and decryption visible instead of treating cryptography as a black box. It shows padding, DES stage order, intermediate hexadecimal values, block information, ciphertext, reverse decryption stages, and verification.
+The application makes Triple DES encryption and decryption visible instead of treating cryptography as a black box. In the browser, encryption accepts **plaintext only** and decryption accepts **ciphertext in hexadecimal only**. The fixed educational key is supplied internally by the frontend, so students never enter a key. The UI shows padding, DES stage order, intermediate hexadecimal values, block information, ciphertext, reverse decryption stages, and verification.
 
 This is an educational and legacy demonstration, **not a production cryptographic service**. 3DES and the baseline ECB mode are retained for assignment continuity and are not recommended for protecting sensitive data.
 
@@ -21,8 +21,8 @@ This is an educational and legacy demonstration, **not a production cryptographi
 
 ## Key Features
 
-- **Interactive encryption:** enter plaintext and inspect UTF-8 encoding, PKCS#7 padding, three DES stages, intermediate values, and hexadecimal ciphertext.
-- **Interactive decryption:** enter generated hexadecimal ciphertext and inspect the reverse EDE pipeline, unpadding, recovered plaintext, and verification.
+- **Interactive encryption:** enter plaintext only and inspect UTF-8 encoding, PKCS#7 padding, three DES stages, intermediate values, and hexadecimal ciphertext.
+- **Interactive decryption:** enter ciphertext in hexadecimal only and inspect the reverse EDE pipeline, unpadding, recovered plaintext, and verification.
 - **3DES EDE visualization:** `DES Encrypt K1 -> DES Decrypt K2 -> DES Encrypt K3`.
 - **Reverse visualization:** `DES Decrypt K3 -> DES Encrypt K2 -> DES Decrypt K1`.
 - **PKCS#7 processing:** DES data is padded to 8-byte blocks and validated during decryption.
@@ -75,7 +75,7 @@ Ciphertext -> DES Decrypt K3 -> DES Encrypt K2 -> DES Decrypt K1
 | Algorithm | Triple DES / 3DES / TDES |
 | Construction | EDE: Encrypt-Decrypt-Encrypt |
 | DES stages | 3 |
-| 3DES key | 24 bytes / 192 bits at the input representation level |
+| 3DES key | 24 bytes / 192 bits |
 | K1 | First 8 bytes / 64 bits |
 | K2 | Second 8 bytes / 64 bits |
 | K3 | Third 8 bytes / 64 bits |
@@ -89,7 +89,7 @@ The **24-byte key** is the complete 3DES key. It is divided into three internal 
 
 ## Key Configuration in the Web Laboratory
 
-The browser UI does not expose an editable key field. The user enters only plaintext for encryption or generated ciphertext for decryption. The frontend uses one fixed, valid 24-byte educational/demo key internally for reproducible learning and derives:
+The web laboratory uses a fixed, valid 24-byte educational key internally so that students can reproduce the same demonstration consistently. Encryption accepts plaintext only. Decryption accepts ciphertext in hexadecimal only. The user does not enter a key, and the actual hexadecimal key material is not displayed or editable in the browser UI. The key is divided into three 8-byte DES key segments and derives:
 
 ```text
 K1 = key[0:8]
@@ -101,7 +101,7 @@ The UI presents K1, K2, and K3 conceptually but does not display the actual hexa
 
 ## Encryption Workflow
 
-1. Enter plaintext in the browser.
+1. Enter plaintext only in the browser; no key input is required.
 2. The backend encodes it as UTF-8.
 3. PKCS#7 padding expands it to a multiple of 8 bytes.
 4. Padded data is processed as 64-bit DES blocks.
@@ -110,7 +110,7 @@ The UI presents K1, K2, and K3 conceptually but does not display the actual hexa
 
 ## Decryption Workflow
 
-1. Select Decrypt and enter hexadecimal ciphertext.
+1. Select Decrypt and enter ciphertext in hexadecimal only; no key input is required.
 2. The backend validates and decodes the ciphertext.
 3. DES Decrypt K3, DES Encrypt K2, and DES Decrypt K1 are applied.
 4. PKCS#7 padding is validated and removed.
@@ -216,7 +216,6 @@ No database, ML/RAG component, authentication system, external API, or cloud ser
 │   └── frontend/README.md
 ├── .env.example
 ├── .gitignore
-├── .agent/                 # Twelve project specification documents
 ├── Dockerfile
 └── README.md
 ```
@@ -268,7 +267,7 @@ Open `http://localhost:8000`. FastAPI Swagger documentation is available at `htt
 ### Encryption
 
 1. Open the application and keep Encrypt selected.
-2. Enter plaintext, such as `YashSeetha`.
+2. Enter plaintext only, such as `YashSeetha`; do not enter a key.
 3. Start encryption.
 4. Inspect PKCS#7 padding and the 8-byte/64-bit block explanation.
 5. Inspect K1, K2, and K3 stage labels and intermediate hexadecimal values.
@@ -277,7 +276,7 @@ Open `http://localhost:8000`. FastAPI Swagger documentation is available at `htt
 ### Decryption
 
 1. Select Decrypt.
-2. Enter the generated ciphertext hexadecimal value.
+2. Enter the generated ciphertext hexadecimal value only; do not enter a key.
 3. Start decryption.
 4. Inspect K3 decrypt, K2 encrypt, and K1 decrypt.
 5. Inspect PKCS#7 unpadding.
@@ -292,6 +291,8 @@ Returns:
 ```json
 {"status": "ok", "service": "3des-virtual-lab"}
 ```
+
+These examples document the backend API. The browser laboratory does not expose `key_hex` as a user input; it supplies the fixed educational key internally.
 
 ### `POST /api/v1/encrypt`
 
@@ -319,7 +320,7 @@ Accepts aligned hexadecimal ciphertext and a strictly validated `key_hex` value:
 
 Returns reverse stages, recovered `plaintext`, and `padding_removed`.
 
-The frontend does not expose an editable key input; it supplies the fixed educational key internally. Direct API callers and tests may provide `key_hex`. FastAPI Swagger documentation is available at `/docs`.
+The frontend does not expose an editable key input. Browser encryption input is plaintext only, and browser decryption input is ciphertext hexadecimal only. Direct API callers and tests may provide `key_hex`. FastAPI Swagger documentation is available at `/docs`.
 
 ## API Validation and Error Handling
 
@@ -383,16 +384,6 @@ The Docker configuration is provided, but this README does not claim a successfu
 
 - `data/test_vectors/3des_vectors.json` contains repeatable educational inputs, valid regression cases, boundary lengths, and Unicode cases.
 - `data/test_vectors/README.md` describes the vector data.
-
-The earlier assignment pair is retained as a malformed compatibility reference only:
-
-```text
-Plaintext: YashSeetha
-Key: 4073ab0e40bcfa861fee534b98346ce8920a4b308ea0b43
-Ciphertext: 2046666be04c2dd3717a854b55f96bc31
-```
-
-That key has 47 hexadecimal characters rather than the required 48. It is not the internal application key and is not a valid baseline vector.
 
 ## Security and Educational Limitations
 
