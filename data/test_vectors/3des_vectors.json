@@ -1,0 +1,9 @@
+[
+  {"id": "assignment-yashseetha", "plaintext": "YashSeetha", "key_hex": "4073ab0e40bcfa861fee534b98346ce8920a4b308ea0b43", "expected_ciphertext_hex": "2046666be04c2dd3717a854b55f96bc31", "expected_plaintext": "YashSeetha", "valid_for_baseline": false, "description": "Existing assignment pair retained verbatim; its key has 47 hex characters and cannot pass the documented 24-byte validation."},
+  {"id": "valid-yashseetha-regression", "plaintext": "YashSeetha", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "expected_ciphertext_hex": "991c790a7768e0ff79f9e9c86b5f8f2e", "description": "Valid 24-byte regression vector independently computed with PyCryptodome"},
+  {"id": "short-one-byte", "plaintext": "A", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "description": "One-byte plaintext"},
+  {"id": "exact-eight-bytes", "plaintext": "12345678", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "description": "Exact block length requiring a full padding block"},
+  {"id": "nine-bytes", "plaintext": "123456789", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "description": "Multi-block boundary"},
+  {"id": "seventeen-bytes", "plaintext": "12345678901234567", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "description": "Three padded blocks"},
+  {"id": "unicode-text", "plaintext": "नमस्ते 🔐", "key_hex": "133457799bbcdff11234567890abcdef23456789abcdef01", "description": "UTF-8 application-level text"}
+]
